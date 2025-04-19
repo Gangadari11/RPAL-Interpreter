@@ -1,0 +1,6 @@
+let Sum_first_n N =
+    let rec Sum_helper Num Acc =
+        Num eq 0 -> Acc
+        | Sum_helper (Num - 1) (Acc + Num)
+    in Sum_helper N 0
+in Print(Sum_first_n 5)
