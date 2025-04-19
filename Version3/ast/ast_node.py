@@ -4,51 +4,49 @@ Defines the structure and behavior of nodes in the AST.
 """
 
 class Node:
-    # Initialize a node with default values
+    """Base class for nodes in the AST."""
     def __init__(self):
-        self.data = None # Content/value of the node
-        self.depth = 0 # Depth level in the tree
-        self.parent = None # Reference to parent node
-        self.children = [] # List of child nodes
-        self.is_standardized = False # List of child nodes
-# Method to set the node's data/content
+        self.data = None
+        self.depth = 0
+        self.parent = None
+        self.children = []
+        self.is_standardized = False
+
     def set_data(self, data):
         """Set the data of the node."""
         self.data = data
-# Method to retrieve the node's data/content
+
     def get_data(self):
         """Get the data of the node."""
         return self.data
-# Method to get the number of children this node has
+
     def get_degree(self):
         """Get the degree (number of children) of the node."""
         return len(self.children)
-     # Method to get the list of child nodes
+    
     def get_children(self):
         """Get the children of the node."""
         return self.children
-# Method to set the depth of this node in the tree
+
     def set_depth(self, depth):
         """Set the depth of the node."""
         self.depth = depth
-# Method to get the depth of this node
+
     def get_depth(self):
         """Get the depth of the node."""
         return self.depth
-# Method to set the parent node
+
     def set_parent(self, parent):
         """Set the parent of the node."""
         self.parent = parent
-  # Method to get the parent node
+
     def get_parent(self):
         """Get the parent of the node."""
         return self.parent
-# Complex method to standardize the AST structure
-# This transforms various language constructs into simpler forms
+
     def standardize(self):
-        # Only standardize if not already done
+        """Standardize the node and its children."""
         if not self.is_standardized:
-             # First standardize all children
             for child in self.children:
                 child.standardize()
 
@@ -116,6 +114,8 @@ class Node:
                 
                 if len(self.children) > 2:
                     Ey = self.children[-1]
+                    Ey = self.children[-1]
+                    current_lambda = NodeFactory.get_node_with_parent("lambda", self.depth + 1, self, [], True)
                     current_lambda = NodeFactory.get_node_with_parent("lambda", self.depth + 1, self, [], True)
                     self.children.insert(1, current_lambda)
 
