@@ -74,4 +74,42 @@ class Node:
                 self.set_data("gamma")
 
             elif self.data == "where":
-                # 
+                # P where X = E   ->   let X = E in P
+                #       WHERE               LET
+                #       /   \             /     \
+                #      P    EQUAL   ->  EQUAL   P
+                #           /   \       /   \
+                #          X     E     X     E
+
+                temp = self.children[0]
+                self.children[0] = self.children[1]
+                self.children[1] = temp
+                self.set_data("let")
+                self.standardize()
+
+            elif self.data == "fcn_form":
+
+                #       FCN_FORM                EQUAL
+                #       /   |   \              /    \
+                #      P    V+   E    ->      P     +LAMBDA
+                #                                    /     \
+                #                                    V     .
+                Ex = self.children[-1]
+                current_lambda = NodeFactory.get_node_with_parent("lambda", self.depth + 1, self, [], True)
+                self.children.insert(1,current_lambda)
+
+                i = 2
+                while self.children[i] != Ex:
+                    V = self.children[i]
+                    self.children.pop(i)
+                    V.set_depth(current_lambda.depth + 1)
+                    V.set_parent(current_lambda)
+                    current_lambda.children.append(V)
+
+                    if len(self.children) > 3:
+                        current_lambda = NodeFactory.get_node_with_parent("lambda", current_lambda.depth + 1, current_lambda, [], True)
+                        current_lambda.get_parent().children.append(current_lambda)
+
+                current_lambda.children.append(Ex)
+                self.children.pop(2)
+                self.set_data("=")
