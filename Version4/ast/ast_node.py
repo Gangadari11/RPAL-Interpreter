@@ -113,3 +113,41 @@ class Node:
                 current_lambda.children.append(Ex)
                 self.children.pop(2)
                 self.set_data("=")
+
+            elif self.data == "lambda":
+
+                #     LAMBDA        LAMBDA
+                #      /   \   ->   /    \
+                #     V++   E      V     .E
+
+                if len(self.children) > 2:
+                    Ey = self.children[-1]
+                    Ey = self.children[-1]
+                    current_lambda = NodeFactory.get_node_with_parent("lambda", self.depth + 1, self, [], True)
+                    current_lambda = NodeFactory.get_node_with_parent("lambda", self.depth + 1, self, [], True)
+                    self.children.insert(1, current_lambda)
+
+                    i = 2
+                    while self.children[i] != Ey:
+                        V = self.children[i]
+                        self.children.pop(i)
+                        V.set_depth(current_lambda.depth + 1)
+                        V.set_parent(current_lambda)
+                        current_lambda.children.append(V)
+
+                        if len(self.children) > 3:
+                            current_lambda = NodeFactory.get_node_with_parent("lambda", current_lambda.depth + 1, current_lambda, [], True)
+                            current_lambda.get_parent().children.append(current_lambda)
+
+                    current_lambda.children.append(Ey)
+                    self.children.pop(2)
+
+            elif self.data == "within":
+
+                #           WITHIN                  EQUAL
+                #          /      \                /     \
+                #        EQUAL   EQUAL    ->      X2     GAMMA
+                #       /    \   /    \                  /    \
+                #      X1    E1 X2    E2               LAMBDA  E1
+                #                                      /    \
+                # 
