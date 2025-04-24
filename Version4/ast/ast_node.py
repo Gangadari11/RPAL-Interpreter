@@ -50,7 +50,7 @@ class Node:
         This transforms constructs into a more uniform and functional structure.
         """
         if not self.is_standardized:
-            for children in self.children:
+            for children in self.children: # First standardize all children recursively
                 child.standardize()
 
             # Transformation rules for various language constructs
@@ -85,7 +85,7 @@ class Node:
                 self.children[0] = self.children[1]
                 self.children[1] = temp
                 self.set_data("let")
-                self.standardize()
+                self.standardize() # Recursive call to standardize as 'let'
 
             elif self.data == "fcn_form":
 
@@ -144,7 +144,7 @@ class Node:
 
             elif self.data == "within":
 
-               #           WITHIN                  EQUAL
+                #           WITHIN                  EQUAL
                 #          /      \                /     \
                 #        EQUAL   EQUAL    ->      X2     GAMMA
                 #       /    \   /    \                  /    \
@@ -224,7 +224,77 @@ class Node:
                 #         |                 /     \
                 #         =        ->       X     GAMMA
                 #      /     \                   /    \
-                #     X       E                Ystar   LAMBDA
+                #     X       E                Y*   LAMBDA
                 #                                     /     \
                 #                                     X      E
                 
+                X = self.children[0].children[0]
+                E = self.children[0].children[1]
+                F = NodeFactory.get_node_with_parent(X.get_data(), self.depth + 1, self, X.children, True)
+                G = NodeFactory.get_node_with_parent("gamma", self.depth + 1, self, [], True)
+                Y = NodeFactory.get_node_with_parent("<Y*>", self.depth + 2, G, [], True)
+                L = NodeFactory.get_node_with_parent("lambda", self.depth + 2, G, [], True)
+
+                X.set_depth(L.depth + 1)
+                X.set_parent(L)
+                E.set_depth(L.depth + 1)
+                E.set_parent(L)
+                L.children.append(X)
+                L.children.append(E)
+                G.children.append(Y)
+                G.children.append(L)
+                self.children.clear()
+                self.children.append(F)
+                self.children.append(G)
+                self.set_data("=")
+
+            # Mark this node as standardized
+            self.is_standardized = True
+
+class  NodeFactory:
+    """Factory class for creating nodes."""
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def get_node(data, depth):
+        """
+        Create aa node with the given data and depth.
+        
+        Args:
+            data: The node for the node
+            depth: the depth of the node
+            
+        Returns:
+            Node: The created node
+        """
+
+        node = Node()
+        node.set_data(data)
+        node.set_depth(depth)
+        node.children = []
+        return node
+    
+    @staticmethod
+    def get_node_with_parent(data, depth, parent, children, is_standarized):
+        """
+        Create a node with the given data, depth, parent, children, and standarization status.
+        
+        Args:
+            data: The data for the node 
+            depth: The depth of the node
+            parent: The parent of the node
+            children: The children of the node
+            is_staandarized: Whether the node is standarized
+            
+        Returns:
+            Node: The created node
+        """
+
+        node = Node()
+        node.set_data(data)
+        node.set_data(depth)
+        node.set_parent(parent)
+        node.children = children
+        node.is_standardized = is_standarized
+        return node
