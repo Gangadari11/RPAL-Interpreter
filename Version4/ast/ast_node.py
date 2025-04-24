@@ -144,10 +144,87 @@ class Node:
 
             elif self.data == "within":
 
-                #           WITHIN                  EQUAL
+               #           WITHIN                  EQUAL
                 #          /      \                /     \
                 #        EQUAL   EQUAL    ->      X2     GAMMA
                 #       /    \   /    \                  /    \
                 #      X1    E1 X2    E2               LAMBDA  E1
                 #                                      /    \
-                # 
+                #                                     X1    E2
+                
+                X1 = self.children[0].children[0]
+                X2 = self.children[1].children[0]
+                E1 = self.children[0].children[1]
+                E2 = self.children[1].children[1]
+                gamma = NodeFactory.get_node_with_parent("gamma", self.depth + 1, self, [], True)
+                lambda_ = NodeFactory.get_node_with_parent("lambda", self.depth + 2, gamma, [], True)
+                X1.set_depth(X1.get_depth() + 1)
+                X1.set_parent(lambda_)
+                X2.set_depth(X1.get_depth() - 1)
+                X2.set_parent(self)
+                E1.set_depth(E1.get_depth() + 1)
+                E1.set_parent(gamma)
+                E2.set_depth(X1.get_depth() + 1)
+                E2.set_parent(lambda_)
+                lambda_.children.append(X1)
+                lambda_.children.append(E2)
+                gamma.children.append(lambda_)
+                gamma.children.append(E1)
+                self.children.clear()
+                self.children.append(X2)
+                self.children.append(gamma)
+                self.set_data("=")
+            elif self.data == "@":
+                
+                #         @              GAMMA
+                #       / | \    ->       /    \
+                #      E1 N E2          GAMMA   E2
+                #                       /    \
+                #                      N     E1
+                
+                gamma1 = NodeFactory.get_node_with_parent("gamma", self.depth + 1, self, [], True)
+                e1 = self.children[0]
+                e1.set_depth(e1.get_depth() + 1)
+                e1.set_parent(gamma1)
+                n = self.children[1]
+                n.set_depth(n.get_depth() + 1)
+                n.set_parent(gamma1)
+                gamma1.children.append(n)
+                gamma1.children.append(e1)
+                self.children.pop(0)
+                self.children.pop(0)
+                self.children.insert(0, gamma1)
+                self.set_data("gamma")
+
+            elif self.data == "and":
+                
+                #            and                 =
+                #             |               /     \
+                #            =++  ->          ,     TAU
+                #           /   \             |      |
+                #          X     E           X++    E++
+                
+                comma = NodeFactory.get_node_with_parent(",", self.depth + 1, self, [], True)
+                tau = NodeFactory.get_node_with_parent("tau", self.depth + 1, self, [], True)
+
+                for equal in self.children:
+                    equal.children[0].set_parent(comma)
+                    equal.children[1].set_parent(tau)
+                    comma.children.append(equal.children[0])
+                    tau.children.append(equal.children[1])
+
+                self.children.clear()
+                self.children.append(comma)
+                self.children.append(tau)
+                self.set_data("=")
+
+            elif self.data == "rec":
+                
+                #        REC                   =
+                #         |                 /     \
+                #         =        ->       X     GAMMA
+                #      /     \                   /    \
+                #     X       E                Ystar   LAMBDA
+                #                                     /     \
+                #                                     X      E
+                
