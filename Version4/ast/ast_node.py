@@ -50,7 +50,7 @@ class Node:
         This transforms constructs into a more uniform and functional structure.
         """
         if not self.is_standardized:
-            for children in self.children:
+            for children in self.children: # First standardize all children recursively
                 child.standardize()
 
             # Transformation rules for various language constructs
@@ -85,7 +85,7 @@ class Node:
                 self.children[0] = self.children[1]
                 self.children[1] = temp
                 self.set_data("let")
-                self.standardize()
+                self.standardize() # Recursive call to standardize as 'let'
 
             elif self.data == "fcn_form":
 
@@ -144,7 +144,7 @@ class Node:
 
             elif self.data == "within":
 
-               #           WITHIN                  EQUAL
+                #           WITHIN                  EQUAL
                 #          /      \                /     \
                 #        EQUAL   EQUAL    ->      X2     GAMMA
                 #       /    \   /    \                  /    \
@@ -248,6 +248,7 @@ class Node:
                 self.children.append(G)
                 self.set_data("=")
 
+            # Mark this node as standardized
             self.is_standardized = True
 
 class  NodeFactory:
