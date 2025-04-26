@@ -41,4 +41,44 @@ class AST:
         """Print the AST."""
         self.pre_order_traverse(self.get_root(), 0)
 
-    
+class ASTFactory:
+    """Factory class for creating ASTs."""
+    def __init__(self):
+        pass
+
+    def get_abstract_syntax_tree(self,data):
+        """
+        Creating an AST from a string representation.
+        
+        Args:
+            data: The string representation of the AST
+            
+        Returns:
+            AST: The creating AST
+        """
+        root = NodeFactory.get_node(data[0],0)
+        previous_node = root
+        current_depth = 0
+
+        for s in data[1:]:
+            i = 0
+            d = 0
+
+            while s[i] == '.':
+                d += 1
+                i += 1
+
+            current_node = NodeFactory.get_node(s[i:], d)
+
+            if current_depth < d:
+                previous_node.children.append(current_node)
+                current_node.set_parent(previous_node)
+            else:
+                while previous_node.get_depth() !=d :
+                    previous_node = previous_node.get_parent()
+                previous_node.get_parent().children.append(current_node)
+                current_node.set_parent(previous_node.get_parent())
+
+            previous_node = current_node
+            current_depth = d
+        return AST(root)
