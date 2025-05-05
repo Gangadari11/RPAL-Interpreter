@@ -1,0 +1,4 @@
+let Abs N =
+    N ls 0 -> 'Negative' | 'Positive'
+in
+Print(Abs 10)
