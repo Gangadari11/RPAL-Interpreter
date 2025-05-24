@@ -1,8 +1,0 @@
-navigate into version3 dir
-python myrpal.py input.txt
-python myrpal.py -ast input.txt
-python myrpal.py -st input.txt
-
-To check tokens from the lexical analyser
-python check_lexer.py input.txt
-

@@ -1,1 +1,0 @@
-let Add x y = x + y in Print(2 @Add 3 @Add 4) //Add (Add 2 3)4

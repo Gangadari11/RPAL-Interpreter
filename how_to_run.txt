@@ -1,0 +1,57 @@
+
+# How to Run RPAL Programs with .txt Files
+
+python myrpal.py filename.txt
+
+## Examples
+
+# 1. Create a simple program file
+echo "Print 'Hello World'" > hello.txt
+python myrpal.py hello.txt
+
+# 2. String concatenation example
+echo "let Conc x y = Conc x y in Print (Conc 'Hello' 'World')" > concat.txt
+python myrpal.py concat.txt
+
+# 3. Lambda function example  
+echo "Print (let f x = x + 1 in f)" > lambda.txt
+python myrpal.py lambda.txt
+
+# 4. View AST structure
+python myrpal.py hello.txt -ast
+
+# 5. View standardized tree
+python myrpal.py hello.txt -st
+
+## File Requirements
+- Any text file with RPAL code
+- UTF-8 encoding recommended
+- File extension doesn't matter (.txt, .rpal, .prog, etc.)
+
+## Sample Programs to Try
+
+### factorial.txt
+let rec factorial n = 
+  n eq 0 -> 1 | n * factorial (n - 1)
+in
+Print (factorial 5)
+
+### fibonacci.txt
+let rec fib n =
+  n le 1 -> n | fib(n-1) + fib(n-2)
+in
+Print (fib 10)
+
+### tuple_example.txt
+let tuple = (1, 'hello', true) in
+Print (Order tuple, tuple)
+
+### conditional.txt
+let max x y = x > y -> x | y in
+let min x y = x &lt; y -> x | y in
+Print (max 10 5, min 10 5)
+
+
+To check tokens from the lexical analyser
+python check_lexer.py input.txt
+

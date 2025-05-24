@@ -1,8 +1,0 @@
-let getGrade marks =
-    not (Isinteger marks) -> 'Please Enter an Integer'
-    | (marks > 100) or (marks < 0) -> 'Invalid Input'
-    | marks >= 75 -> 'A'
-    | marks >= 65 -> 'B'
-    | marks >= 50 -> 'C'
-    | 'F'
-in Print (getGrade ('qqq'))
