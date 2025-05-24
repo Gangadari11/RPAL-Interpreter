@@ -218,17 +218,17 @@ python myrpal.py factorial_example.txt
 
 | Function | Description | Example |
 |----------|-------------|---------|
-| Print | Output values | \`Print 'Hello'\` |
-| Conc | String concatenation | \`Conc 'Hello' 'World'\` |
-| Stem | First character of string | \`Stem 'Hello'\` → \`'H'\` |
-| Stern | String without first character | \`Stern 'Hello'\` → \`'ello'\` |
-| Order | Length of tuple | \`Order (1,2,3)\` → \`3\` |
-| Isinteger | Check if integer | \`Isinteger 42\` → \`true\` |
-| Isstring | Check if string | \`Isstring 'hello'\` → \`true\` |
-| Istuple | Check if tuple | \`Istuple (1,2)\` → \`true\` |
-| Isdummy | Check if dummy | \`Isdummy dummy\` → \`true\` |
-| Istruthvalue | Check if boolean | \`Istruthvalue true\` → \`true\` |
-| Isfunction | Check if function | \`Isfunction (lambda x.x)\` → \`true\` |
+| Print | Output values | Print 'Hello' |
+| Conc | String concatenation | Conc 'Hello' 'World'  |
+| Stem | First character of string | Stem 'Hello'  → \'H' |
+| Stern | String without first character | Stern 'Hello'  →  'ello' |
+| Order | Length of tuple |  Order (1,2,3) →  3 |
+| Isinteger | Check if integer | Isinteger 42  → true |
+| Isstring | Check if string | Isstring 'hello' → true |
+| Istuple | Check if tuple | Istuple (1,2) → true |
+| Isdummy | Check if dummy | Isdummy dummy → true |
+| Istruthvalue | Check if boolean | Istruthvalue true → true |
+| Isfunction | Check if function | Isfunction (lambda x.x) → true |
 
 ## Debugging
 
