@@ -51,6 +51,14 @@ let max x y = x > y -> x | y in
 let min x y = x &lt; y -> x | y in
 Print (max 10 5, min 10 5)
 
+To get the output
+python myrpal.py filename.txt
+
+To check the ast
+python myrpal.py filename.txt -ast
+
+To check the standardized tree
+python myrpal.py filename.txt -st
 
 To check tokens from the lexical analyser
 python check_lexer.py input.txt

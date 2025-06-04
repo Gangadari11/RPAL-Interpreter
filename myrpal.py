@@ -2,7 +2,7 @@
 """
 RPAL Language Interpreter
 CS 3513 - Programming Languages Project 01
-
+Authors - Gangadari M.D.S (220178X ) , Jayawardana W.S.S (220282K)
 This program implements a lexical analyzer, parser, and CSE machine for the RPAL language.
 """
 
