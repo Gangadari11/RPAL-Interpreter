@@ -356,3 +356,222 @@ Print (Order tuple, tuple)
 let max x y = x > y -> x | y in
 let min x y = x &lt; y -> x | y in
 Print (max 10 5, min 10 5)
+
+
+## 2. System Architecture
+
+### 2.1 Overall System Flow
+
+```
+RPAL Source Code
+       ↓
+   Lexical Analyzer (Tokenizer)
+       ↓
+   List of Tokens
+       ↓
+   Parser
+       ↓
+   Abstract Syntax Tree (AST)
+       ↓
+   Standardizer
+       ↓
+   Standardized Tree (ST)
+       ↓
+   CSE Machine
+       ↓
+   Program Output
+```
+
+
+### 2.2 Component Interaction Diagram
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   myrpal.py     │───▶│   lexer.py      │───▶│   parser.py     │
+│   (Main Driver) │    │   (Tokenizer)   │    │   (AST Builder) │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                                              │
+         ▼                                              ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Output        │◀───│  cse_machine.py │◀───│  ast_printer.py │
+│   (Results)     │    │  (Executor)     │    │  (Standardizer) │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+
+2.3 Module Structure
+```
+myrpal/
+├── myrpal.py                 # Main driver
+├── lexer/
+│   └── lexer.py              # Lexical analyzer
+├── parser/
+│   └── parser.py             # Recursive descent parser
+├── ast/
+│   ├── ast_node.py           # AST node structure
+│   └── ast_printer.py        # Standardization + AST display
+├── cse_machine/
+│   └── cse_machine.py        # Stack-based execution machine
+└── utils/
+    ├── token_types.py        # Enum and constants
+    └── helper_functions.py   # General utilities
+```
+
+#### 3.1.2 Token Types
+```
+class TokenType(Enum):
+    KEYWORD = 1      # let, in, fn, where, etc.
+    IDENTIFIER = 2   # Variable names
+    INTEGER = 3      # Numeric literals
+    STRING = 4       # String literals
+    PUNCTUATION = 5  # (, ), ;, ,
+    OPERATOR = 6     # +, -, *, /, etc.
+    END_OF_TOKENS = 7
+```
+
+#### 3.1.3 Lexical Rules Implementation
+```
+token_patterns = {
+    'COMMENT': r'//.*',
+    'KEYWORD': r'(let|in|fn|where|aug|or|not|gr|ge|ls|le|eq|ne|true|false|nil|dummy|within|and|rec)\\b',
+    'STRING': r'\\'(?:\\\\\\'|[^\\'])*\\'',
+    'IDENTIFIER': r'[a-zA-Z][a-zA-Z0-9_]*',
+    'INTEGER': r'\\d+',
+    'OPERATOR': r'[+\\-*<>&.@/:=~|$\\#!%^_\\[\\]{}"\\'?]+',
+    'SPACES': r'[ \\t\\n]+',
+    'PUNCTUATION': r'[();,]'
+}
+```
+
+#### 3.2.2 Grammar Rules Mapping
+```
+E   → 'let' D 'in' E | 'fn' Vb+ '.' E | Ew
+Ew  → T 'where' Dr | T
+T   → Ta (',' Ta)*
+Ta  → Ta 'aug' Tc | Tc
+Tc  → B '->' Tc '|' Tc | B
+B   → B 'or' Bt | Bt
+Bt  → Bt '&' Bs | Bs
+Bs  → 'not' Bp | Bp
+Bp  → A ('gr'|'ge'|'ls'|'le'|'eq'|'ne') A | A
+A   → A ('+'|'-') At | At
+At  → At ('*'|'/') Af | Af
+Af  → Ap '**' Af | Ap
+Ap  → Ap '@' '<IDENTIFIER>' R | R
+R   → R Rn | Rn
+Rn  → '<IDENTIFIER>' | '<INTEGER>' | '<STRING>' | 'true' | 'false' | 'nil' | '(' E ')' | 'dummy'
+```
+
+#### 3.3.1 Node Structure
+```
+class Node:
+    def __init__(self):
+        self.data = None           # Node content
+        self.depth = 0            # Tree depth
+        self.parent = None        # Parent reference
+        self.children = []        # Child nodes
+        self.is_standardized = False
+```
+
+#### 3.4.2 Standardization Rules
+
+**Let Expression:**
+```
+let x = E in P  →  gamma(lambda x.P, E)
+```
+**Where Expression:**
+```
+P where x = E  →  let x = E in P
+```
+
+**Function Form:**
+```
+f x1 x2...xn = E  →  f = lambda x1.(lambda x2.(...(lambda xn.E)...))
+```
+
+**Lambda with Multiple Parameters:**
+```
+lambda x1 x2...xn.E  →  lambda x1.(lambda x2.(...(lambda xn.E)...))
+```
+
+**Within Expression:**
+```
+x1 = E1 within x2 = E2  →  x2 = gamma(lambda x1.E2, E1)
+```
+
+**Simultaneous Definitions:**
+```
+x1 = E1 and x2 = E2  →  (x1, x2) = tau(E1, E2)
+```
+
+**Recursive Definition:**
+```
+rec x = E  →  x = gamma(Y*, lambda x.E)
+```
+
+**Infix Operator:**
+```
+E1 @ N E2  →  gamma(gamma(N, E1), E2)
+```
+
+#### 3.5.2 Symbol Types
+```
+# Basic symbols
+class Symbol: pass
+class Rand(Symbol): pass      # Operands
+class Rator(Symbol): pass     # Operators
+
+# Specific symbol types
+class Lambda(Symbol): pass    # Lambda expressions
+class Gamma(Symbol): pass     # Function application
+class Delta(Symbol): pass     # Code blocks
+class Beta(Symbol): pass      # Conditional selection
+class Tau(Symbol): pass       # Tuple construction
+class E(Symbol): pass         # Environment markers
+```
+
+```
+def execute(self):
+    while self.control:
+        current_symbol = self.control.pop()
+        
+        if isinstance(current_symbol, Id):
+            # Variable lookup
+            self.stack.insert(0, current_environment.lookup(current_symbol))
+            
+        elif isinstance(current_symbol, Lambda):
+            # Lambda closure creation
+            current_symbol.set_environment(current_environment.get_index())
+            self.stack.insert(0, current_symbol)
+            
+        elif isinstance(current_symbol, Gamma):
+            # Function application
+            self.handle_gamma()
+            
+        # ... other symbol types
+```
+### 4.1 Main Driver (myrpal.py)
+
+```
+def main() -> None:
+    """Main entry point for the RPAL interpreter."""
+    
+def parse_arguments() -> argparse.Namespace:
+    """Parse command line arguments."""
+    
+def read_input_file(filename: str) -> str:
+    """Read RPAL program from input file."""
+```
+\`\`\`python
+def tokenize(input_str: str) -> List[Token]:
+    """
+    Tokenize the input string according to RPAL lexical rules.
+    
+    Args:
+        input_str: The input RPAL program as a string
+        
+    Returns:
+        List of Token objects
+    """
+\`\`\`
+

@@ -11,7 +11,7 @@ ast:
 
 # Target to print the standardized AST
 sast:
-	$(PYTHON) myrpal.py $(file) -sast
+	$(PYTHON) myrpal.py $(file) -st
 
 clean:
 	rm -rf __pycache__ *.pyc

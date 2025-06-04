@@ -32,6 +32,8 @@ class AST:
             node: The current node
             i: The current indentation level
         """
+        
+
         print("." * i + str(node.get_data())) # Print the current node's data with indentation
         for child in node.children:
             self.pre_order_traverse(child, i + 1) # Recursively traverse child nodes
