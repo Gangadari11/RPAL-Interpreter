@@ -1,7 +1,24 @@
 
-# How to Run RPAL Programs with .txt Files
+######To get the output
+python myrpal.py [filename.txt]
 
-python myrpal.py filename.txt
+######To check the ast
+python myrpal.py  [filename.txt] -ast
+
+######To check the standardized tree
+python myrpal.py  [filename.txt] -st
+
+######To check tokens from the lexical analyser
+Navigate to the lexer folder
+python check_lexer.py [filename.txt]
+
+
+######If the input file isn't in the same directory as the python file, provide the full path to the file
+Examples
+python myrpal.py inputs/[filename.txt]
+
+
+
 
 ## Examples
 
@@ -50,16 +67,4 @@ Print (Order tuple, tuple)
 let max x y = x > y -> x | y in
 let min x y = x &lt; y -> x | y in
 Print (max 10 5, min 10 5)
-
-To get the output
-python myrpal.py filename.txt
-
-To check the ast
-python myrpal.py filename.txt -ast
-
-To check the standardized tree
-python myrpal.py filename.txt -st
-
-To check tokens from the lexical analyser
-python check_lexer.py input.txt
 
